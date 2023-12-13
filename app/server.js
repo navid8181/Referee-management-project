@@ -1,6 +1,7 @@
 
 const express = require('express');
 const http = require('http');
+const { allRoutes } = require('./router/routes');
 class Server {
 
     #app = express();
@@ -13,6 +14,7 @@ class Server {
 
         this.configApplication();
         this.createServer();
+        this.createRoutes();
     }
 
     
@@ -30,6 +32,9 @@ class Server {
     }
 
 
+    createRoutes(){
+        this.#app.use(allRoutes);
+    }
 
 
 }
