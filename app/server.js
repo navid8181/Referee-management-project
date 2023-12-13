@@ -3,6 +3,8 @@ const express = require('express');
 const http = require('http');
 const { allRoutes } = require('./router/routes');
 const {default: mongoose} = require('mongoose');
+const createHttpError = require('http-errors');
+const {StatusCodes} = require("http-status-codes")
 class Server {
 
     #app = express();
@@ -17,6 +19,7 @@ class Server {
         this.createServer();
         this.createRoutes();
         this.connectToDB();
+        this.errorHandling();
     }
 
     
@@ -72,6 +75,40 @@ class Server {
         })
     }
 
+
+    errorHandling(){
+
+        this.#app.use((req,res,next)=>{
+
+            res.status(StatusCodes.NOT_FOUND).json(createHttpError.NotFound("آدرس مورد نظر یافت نشد"))
+
+        })
+
+        this.#app.use((error, req, res, next) => {
+
+
+            const serverError = createHttpError.InternalServerError();
+
+            const statusCode = error.status || serverError.status;
+
+            const message = error.message || serverError.message;
+
+            return res.status(statusCode).json({
+
+                errors: {
+                    statusCode,
+                    message,
+               
+
+                }
+
+
+            })
+
+
+        })
+
+    }
 
 }
 
