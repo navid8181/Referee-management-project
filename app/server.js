@@ -2,6 +2,7 @@
 const express = require('express');
 const http = require('http');
 const { allRoutes } = require('./router/routes');
+const {default: mongoose} = require('mongoose');
 class Server {
 
     #app = express();
@@ -15,6 +16,7 @@ class Server {
         this.configApplication();
         this.createServer();
         this.createRoutes();
+        this.connectToDB();
     }
 
     
@@ -34,6 +36,40 @@ class Server {
 
     createRoutes(){
         this.#app.use(allRoutes);
+    }
+
+    async connectToDB(){
+        try {
+
+            await mongoose.connect(this.#DB_URI)
+            
+            console.log("connect to mongodb is successful");
+            
+        } catch (error) {
+            console.log("unable to connect to MongoDB");
+            console.log(error.message);
+        }
+
+        mongoose.connection.on("connected", () => {
+
+            console.log("connect to mongodb is successful");
+
+        })
+
+        mongoose.connection.on("disconnected", () => {
+
+            console.log("disconnect to mongodb...");
+
+        })
+
+        process.on('SIGINT', async () => {
+
+            await mongoose.connection.close();
+            console.log("mongo Connection is Closed...");
+
+            process.exit(0);
+
+        })
     }
 
 
