@@ -4,6 +4,7 @@ const router = require('express').Router();
 
 router.post("/add",refereeController.add)
 router.get("/all",refereeController.getAll)
+router.get("/:id",refereeController.getRefereeByID)
 router.delete("/remove/:id",refereeController.removeByID)
 
 

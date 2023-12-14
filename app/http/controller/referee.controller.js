@@ -55,13 +55,18 @@ class RefereeController extends Controller {
         }
     }
 
-    // async getAll(req,res,next){
-    //     try {
+    async getRefereeByID(req,res,next){
+        try {
+            const { id } = req.params;
+            await objectIdValidator.validateAsync({ id });
 
-    //     } catch (error) {
-    //         next(error)
-    //     }
-    // }
+            const referee = await RefereeModel.findOne({_id : id},{__v : 0})
+
+            res.status(StatusCodes.OK).json(createDataMessage(StatusCodes.OK, { referee }))
+        } catch (error) {
+            next(error)
+        }
+    }
 
 
 }
