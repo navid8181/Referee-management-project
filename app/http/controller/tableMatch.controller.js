@@ -6,11 +6,40 @@ const { tableMatchSchemaValidator, tableAddScoreSchemaValidator } = require("../
 const { StatusCodes } = require("http-status-codes")
 
 const Controller = require("./Controller");
-const { createMessage } = require("../../utils/responseMessage");
+const { createMessage, createDataMessage } = require("../../utils/responseMessage");
 const {RefereeModel} = require("../../models/referee.model");
 
 class TableMatchController extends Controller {
 
+
+
+    async getAll(req,res,next){
+
+        try {
+
+            const tableMatches = await TableMatchModel.find({},{__v : 0}).populate("participantID",{__v : 0,_id : 0}).populate("scoreTable.refereeID",{__v : 0,_id : 0})
+
+            return res.status(StatusCodes.OK).json(createDataMessage(StatusCodes.OK,{tableMatches}))
+            
+        } catch (error) {
+            next(error)
+        }
+
+    }
+    async getTableMatchByID(req,res,next){
+
+        try {
+            const {id} = req.params;
+            await objectIdValidator.validateAsync({id})
+            const tableMatch = await TableMatchModel.find({_id : id},{__v : 0}).populate("participantID",{__v : 0,_id : 0}).populate("scoreTable.refereeID",{__v : 0,_id : 0})
+
+            return res.status(StatusCodes.OK).json(createDataMessage(StatusCodes.OK,{tableMatch}))
+            
+        } catch (error) {
+            next(error)
+        }
+
+    }
 
     async add(req, res, next) {
 
