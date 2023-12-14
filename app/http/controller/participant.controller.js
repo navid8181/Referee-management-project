@@ -44,6 +44,7 @@ class ParticipantController extends Controller {
             const { id } = req.params;
             await objectIdValidator.validateAsync({ id });
 
+            await this.findParticipant(id)
             const removeResult = await ParticipantModel.deleteOne({ _id: id });
 
             if (removeResult.deletedCount == 0)
@@ -61,14 +62,23 @@ class ParticipantController extends Controller {
             const { id } = req.params;
             await objectIdValidator.validateAsync({ id });
 
-            const participant = await ParticipantModel.findOne({_id : id},{__v : 0})
+            const participant = this.findParticipant(id)
+           
 
             res.status(StatusCodes.OK).json(createDataMessage(StatusCodes.OK, { participant }))
         } catch (error) {
             next(error)
         }
     }
+    async findParticipant(id){
 
+        const participant = await ParticipantModel.findOne({_id : id},{__v : 0})
+
+        if (!participant)
+            throw new createHttpError.BadRequest("شرکت کننده ای با این مشخصات یافت نشد")
+
+        return participant;
+    }
 
 }
 

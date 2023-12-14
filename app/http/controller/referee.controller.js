@@ -43,6 +43,8 @@ class RefereeController extends Controller {
             const { id } = req.params;
             await objectIdValidator.validateAsync({ id });
 
+            await this.findReferee(id);
+
             const removeResult = await RefereeModel.deleteOne({ _id: id });
 
             if (removeResult.deletedCount == 0)
@@ -60,7 +62,7 @@ class RefereeController extends Controller {
             const { id } = req.params;
             await objectIdValidator.validateAsync({ id });
 
-            const referee = await RefereeModel.findOne({_id : id},{__v : 0})
+            const referee = await this.findReferee(id)
 
             res.status(StatusCodes.OK).json(createDataMessage(StatusCodes.OK, { referee }))
         } catch (error) {
@@ -68,6 +70,14 @@ class RefereeController extends Controller {
         }
     }
 
+    async findReferee(id){
+        const referee = await RefereeModel.findOne({_id : id},{__v : 0})
+
+        if (!referee)
+        throw new createHttpError.BadRequest("داوری ای با این مشخصات یافت نشد")
+
+        return referee;
+    }
 
 }
 
