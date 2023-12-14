@@ -5,6 +5,7 @@ const { allRoutes } = require('./router/routes');
 const {default: mongoose} = require('mongoose');
 const createHttpError = require('http-errors');
 const {StatusCodes} = require("http-status-codes")
+
 class Server {
 
     #app = express();
