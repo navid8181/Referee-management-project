@@ -4,6 +4,7 @@ const router = require('express').Router();
 
 
 router.post("/add/:participantID",tableMatchController.add)
+router.post("/add-score/:id",tableMatchController.addScore)
 
 
 

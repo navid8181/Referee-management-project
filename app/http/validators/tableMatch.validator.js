@@ -1,5 +1,6 @@
 const createHttpError = require("http-errors");
 const Joi = require("joi");
+const { MongoIdPattern } = require("../../utils/Constant");
 
 const tableMatchSchemaValidator = Joi.object({
 
@@ -9,5 +10,14 @@ const tableMatchSchemaValidator = Joi.object({
 
 
 })
+const tableAddScoreSchemaValidator = Joi.object({
 
-module.exports = {tableMatchSchemaValidator}
+    score : Joi.number().error(new createHttpError.BadRequest("امتیاز ورودی باید عدد باشد")).allow(),
+    refereeID :Joi.string().pattern(MongoIdPattern).error(createHttpError.BadRequest("شناسه داور مورد نظر اشتباه می باشد"))
+
+
+
+
+})
+
+module.exports = {tableMatchSchemaValidator,tableAddScoreSchemaValidator}

@@ -62,7 +62,7 @@ class ParticipantController extends Controller {
             const { id } = req.params;
             await objectIdValidator.validateAsync({ id });
 
-            const participant = this.findParticipant(id)
+            const participant = await this.findParticipant(id)
            
 
             res.status(StatusCodes.OK).json(createDataMessage(StatusCodes.OK, { participant }))
