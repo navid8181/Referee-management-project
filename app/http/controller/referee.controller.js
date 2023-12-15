@@ -6,6 +6,7 @@ const Controller = require("./Controller");
 const { createMessage, createDataMessage } = require("../../utils/responseMessage");
 const { objectIdValidator } = require("../validators/public.validator");
 const createHttpError = require("http-errors");
+const { TableMatchModel } = require("../../models/tableMatch.model");
 
 class RefereeController extends Controller {
 
@@ -45,19 +46,33 @@ class RefereeController extends Controller {
 
             await this.findReferee(id);
 
+            const tableMachUpdateResult = await TableMatchModel.updateMany({ "scoreTable.refereeID": id }, {
+
+                $pull: {
+                    scoreTable : {refereeID : id}
+                }
+            })
+
+            console.log(tableMachUpdateResult);
+            if (tableMachUpdateResult.modifiedCount == 0)
+                throw createHttpError.InternalServerError("فایل حذف نشد")
+
+
+              //  throw createHttpError.InternalServerError("TEST")
+
             const removeResult = await RefereeModel.deleteOne({ _id: id });
 
             if (removeResult.deletedCount == 0)
                 throw createHttpError.InternalServerError("داور حذف نشد")
 
-                return res.status(StatusCodes.OK).json(createMessage(StatusCodes.OK, "داور با موفقیت حذف شد"))
+            return res.status(StatusCodes.OK).json(createMessage(StatusCodes.OK, "داور با موفقیت حذف شد"))
 
         } catch (error) {
             next(error)
         }
     }
 
-    async getRefereeByID(req,res,next){
+    async getRefereeByID(req, res, next) {
         try {
             const { id } = req.params;
             await objectIdValidator.validateAsync({ id });
@@ -70,11 +85,11 @@ class RefereeController extends Controller {
         }
     }
 
-    async findReferee(id){
-        const referee = await RefereeModel.findOne({_id : id},{__v : 0})
+    async findReferee(id) {
+        const referee = await RefereeModel.findOne({ _id: id }, { __v: 0 })
 
         if (!referee)
-        throw new createHttpError.BadRequest("داوری ای با این مشخصات یافت نشد")
+            throw new createHttpError.BadRequest("داوری ای با این مشخصات یافت نشد")
 
         return referee;
     }

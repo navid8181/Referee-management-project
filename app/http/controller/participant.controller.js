@@ -7,6 +7,7 @@ const { objectIdValidator } = require("../validators/public.validator");
 const createHttpError = require("http-errors");
 const { participantSchemaValidator } = require("../validators/participant.validator");
 const { ParticipantModel } = require("../../models/participant.model");
+const { TableMatchModel } = require("../../models/tableMatch.model");
 
 class ParticipantController extends Controller {
 
@@ -45,6 +46,12 @@ class ParticipantController extends Controller {
             await objectIdValidator.validateAsync({ id });
 
             await this.findParticipant(id)
+
+           const tableMatchDeleteResult = await TableMatchModel.deleteMany({participantID : id})
+
+           if (tableMatchDeleteResult.deletedCount == 0)
+                throw createHttpError.InternalServerError("عملیات حذف موفقیت آمیز نبود")
+
             const removeResult = await ParticipantModel.deleteOne({ _id: id });
 
             if (removeResult.deletedCount == 0)
